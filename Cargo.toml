@@ -14,6 +14,7 @@ fern = { version = "0.7.1", features = ["colored"] }
 humantime = "2.3.0"
 log = "0.4.29"
 pollster = "0.4.0"
+sdl2 = { version = "0.38.0", features = ["raw-window-handle", "static-link", "use-pkgconfig"] }
 
 [dependencies.wgpu]
 version = "27.0.1"

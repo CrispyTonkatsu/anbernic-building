@@ -68,27 +68,28 @@
                 xorg.xmodmap
                 xorg.xev
                 libGL.dev
+                SDL2
+                SDL2.dev
               ] ++ platformDeps;
 
               depsBuildBuild = [ qemu ];
 
               buildInputs = with pkgsCross; [ 
                 openssl 
+                # SDL2
+                # SDL2.dev
               ];
 
               env = {
                 LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath (with pkgs; [
-                  vulkan-volk
-                  vulkan-tools
-                  vulkan-loader
-                  vulkan-headers
-                  vulkan-validation-layers
-                  vulkan-tools-lunarg
-                  vulkan-extension-layer
+                  SDL2
+                  SDL2.dev
                 ]);
 
-                VK_LAYER_PATH = "${pkgs.vulkan-validation-layers}/share/vulkan/explicit_layer.d";
-                VULKAN_SDK = "${pkgs.vulkan-validation-layers}/share/vulkan/explicit_layer.d";
+                DYLD_LIBRARY_PATH = pkgs.lib.makeLibraryPath (with pkgs; [
+                  SDL2
+                  SDL2.dev
+                ]);
 
                 CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER = "${pkgsCross.pkgsStatic.stdenv.cc.targetPrefix}cc";
                 CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_RUNNER = "qemu-aarch64";
