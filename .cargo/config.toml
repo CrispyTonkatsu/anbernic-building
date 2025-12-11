@@ -1,0 +1,6 @@
+[build]
+rustflags = [
+  "-C", "link-arg=-lm",
+  "-C", "link-arg=-ldl",
+  "-C", "target-feature=-crt-static"
+]

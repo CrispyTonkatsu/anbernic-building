@@ -21,29 +21,78 @@
       devShells.default =
         let
           pkgsCross = pkgs.pkgsCross.aarch64-multiplatform;
+          platformDeps = (if pkgs.stdenv.isDarwin then with pkgsCross; [ 
+            libiconv 
+          ] else with pkgsCross; [ 
+              libdrm.dev 
+              libdecor.dev
+              mesa
+            ]);
           rust-bin = rust-overlay.lib.mkRustBin { } pkgsCross.buildPackages;
         in
-          pkgsCross.callPackage (
-            {
-            mkShell,
-            pkg-config,
-            qemu,
-            openssl,
-            stdenv,
-            }:
+          pkgsCross.callPackage ( { mkShell, pkg-config, qemu, openssl, stdenv, }:
             mkShell {
-              nativeBuildInputs = [
+              nativeBuildInputs = with pkgsCross; [
                 (rust-bin.fromRustupToolchainFile ./toolchain.toml)
                 pkg-config
-              ];
+                xkeyboard_config
+                xorg.libX11.dev
+                xorg.libXau.dev
+                xorg.libXdmcp.dev
+                xorg.libfontenc.out
+                xorg.libICE.dev
+                xorg.libSM.dev
+                libuuid.dev
+                xorg.libXaw.dev
+                xorg.libXext.dev
+                xorg.libXpm.dev
+                xorg.libXcomposite.dev
+                xorg.libXcursor.dev
+                xorg.libXrender.dev
+                xorg.libXdamage.dev
+                xorg.libXi.dev
+                xorg.libXinerama.dev
+                xorg.libxkbfile.dev
+                xorg.libXrandr.dev
+                xorg.libXres.dev
+                xorg.libXScrnSaver.out
+                xorg.libXtst.out
+                xorg.libXv.dev
+                xorg.libXxf86vm.dev
+                xorg.xcbutilwm.dev
+                xorg.xcbutilimage.dev
+                xorg.xcbutilkeysyms.dev
+                xorg.xcbutilrenderutil.dev
+                xorg.xcbutil.dev
+                xcb-util-cursor.dev
+                xorg.xmodmap
+                xorg.xev
+                libGL.dev
+              ] ++ platformDeps;
 
               depsBuildBuild = [ qemu ];
-              buildInputs = [ openssl ];
+
+              buildInputs = with pkgsCross; [ 
+                openssl 
+              ];
 
               env = {
-                CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER = "${stdenv.cc.targetPrefix}cc";
+                LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath (with pkgs; [
+                  vulkan-volk
+                  vulkan-tools
+                  vulkan-loader
+                  vulkan-headers
+                  vulkan-validation-layers
+                  vulkan-tools-lunarg
+                  vulkan-extension-layer
+                ]);
+
+                VK_LAYER_PATH = "${pkgs.vulkan-validation-layers}/share/vulkan/explicit_layer.d";
+                VULKAN_SDK = "${pkgs.vulkan-validation-layers}/share/vulkan/explicit_layer.d";
+
+                CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER = "${pkgsCross.pkgsStatic.stdenv.cc.targetPrefix}cc";
                 CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_RUNNER = "qemu-aarch64";
-                CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER = "${stdenv.cc.targetPrefix}cc";
+                CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER = "${pkgsCross.pkgsStatic.stdenv.cc.targetPrefix}cc";
                 CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_RUNNER = "qemu-aarch64";
               };
             }
