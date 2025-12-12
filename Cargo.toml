@@ -14,18 +14,16 @@ fern = { version = "0.7.1", features = ["colored"] }
 humantime = "2.3.0"
 log = "0.4.29"
 pollster = "0.4.0"
-sdl2 = { version = "0.38.0", features = ["raw-window-handle", "static-link", "use-pkgconfig"] }
+sdl2 = { version = "0.38.0", features = ["raw-window-handle"] }
 
 [dependencies.wgpu]
 version = "27.0.1"
 
-# [target.aarch64-unknown-linux-musl.dependencies.wgpu]
-# default-features = false
-# version = "27.0.1"
-# features = [	
-# 	"std",
-# 	"parking_lot",
-# 	"gles",
-# 	"vulkan",
-# 	"wgsl"
-# ]
+[target.aarch64-unknown-linux-musl.dependencies.sdl2]
+version = "0.38.0"
+features = [	
+	"raw-window-handle",
+	"static-link",
+	"bundled",
+	# "use-pkgconfig",
+]
